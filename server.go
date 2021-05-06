@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
+
+	"github.com/mskarbe/go-gql-api-server/db/postgres"
+	"github.com/mskarbe/go-gql-api-server/pkg/config"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -11,19 +13,27 @@ import (
 	"github.com/mskarbe/go-gql-api-server/graph/generated"
 )
 
-const defaultPort = "8080"
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	env := config.GetConfig()
+
+	// database connect & migrate
+	var db postgres.Postgres
+	db.Connect(env.Db)
+	db.Migrate()
+	defer db.Close()
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(
+		generated.Config{Resolvers: 
+			&graph.Resolver{
+				DbSchema: db.Database,
+			},
+		},
+	))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", env.Gql.Port)
+	log.Fatal(http.ListenAndServe(":"+env.Gql.Port, nil))
 }
