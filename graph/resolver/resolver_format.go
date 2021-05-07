@@ -10,8 +10,13 @@ import (
 func (r *Resolver) getFormats() ([]*model.Format, error) {
 	sql := `SELECT * FROM format;`
 	var formats []*model.Format
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
 	
-	rows, err := r.DbSchema.Query(sql)
+	rows, err := query.Query()
 	if err != nil {
   		log.Println(err)
 		return nil, err
@@ -37,11 +42,35 @@ func (r *Resolver) getFormats() ([]*model.Format, error) {
 	return formats, nil
 }
 
+// get a single format by id
+func (r *Resolver) getFormatByPk(format_id string) (*model.Format, error) {
+	sql := `SELECT * FROM format WHERE format_id=$1::VARCHAR(20);`
+	var format model.Format
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = query.QueryRow(format_id).Scan(&format.ID, &format.Book.ID, &format.Type, &format.Price, &format.Supply)
+	if err != nil {
+		log.Println(err) 
+		return nil, err
+	}
+
+	return &format, nil
+}
+
 func (r *Resolver) getFormatTypes() ([]*model.FormatType, error) {
 	sql := `SELECT * FROM format_type;`
 	var format_types []*model.FormatType
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
 	
-	rows, err := r.DbSchema.Query(sql)
+	rows, err := query.Query()
 	if err != nil {
   		log.Println(err)
 		return nil, err

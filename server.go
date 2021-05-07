@@ -25,12 +25,13 @@ func main() {
 
 	resolver := &graph.Resolver{DbSchema: db.Database}
 	resolver.Initialize()
+	log.Println("Resolver initialized")
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{ Resolvers: resolver }))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", env.Gql.Port)
+	log.Printf("Connect to http://localhost:%s/ for GraphQL playground", env.Gql.Port)
 	log.Fatal(http.ListenAndServe(":"+env.Gql.Port, nil))
 }

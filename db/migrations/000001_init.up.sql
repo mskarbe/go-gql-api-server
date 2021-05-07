@@ -5,7 +5,7 @@ CREATE DOMAIN CUID AS VARCHAR(25);
 -- author
 CREATE TABLE IF NOT EXISTS author (
     author_id CUID PRIMARY KEY,
-    full_name TEXT NOT NULL,
+    full_name VARCHAR(64) NOT NULL,
     description TEXT,
     photo_url TEXT
 );
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS book_author (
 
 -- format type
 CREATE TABLE IF NOT EXISTS format_type (
-    id VARCHAR(10) NOT NULL PRIMARY KEY,
+    id VARCHAR(20) NOT NULL PRIMARY KEY,
     comment VARCHAR(30)
 );
 
@@ -37,7 +37,7 @@ INSERT INTO format_type (id) VALUES ('E-Book'), ('Hardcover'), ('Paperback') ON 
 
 -- book's format
 CREATE TABLE IF NOT EXISTS format (
-    format_id CUID PRIMARY KEY,
+    format_id VARCHAR(20) PRIMARY KEY,
     book_id CUID NOT NULL REFERENCES book(book_id),
     format_type VARCHAR(10) NOT NULL REFERENCES format_type(id) ON UPDATE CASCADE,
     price FLOAT NOT NULL, 
@@ -46,14 +46,14 @@ CREATE TABLE IF NOT EXISTS format (
 
 -- category
 CREATE TABLE IF NOT EXISTS category (
-    category_id CUID PRIMARY KEY,
+    category_id VARCHAR(20) PRIMARY KEY,
     comment TEXT
 );
 
 -- book category [relationship]
 CREATE TABLE IF NOT EXISTS book_category (
     book_id CUID NOT NULL REFERENCES book(book_id),
-    category_id CUID NOT NULL REFERENCES category(category_id) ON UPDATE CASCADE,
+    category_id VARCHAR(20) NOT NULL REFERENCES category(category_id) ON UPDATE CASCADE,
     PRIMARY KEY (book_id, category_id)
 );
 

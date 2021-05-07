@@ -10,8 +10,13 @@ import (
 func (r *Resolver) getCategories() ([]*model.Category, error) {
 	sql := `SELECT * FROM category;`
 	var categories []*model.Category
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
 	
-	rows, err := r.DbSchema.Query(sql)
+	rows, err := query.Query()
 	if err != nil {
   		log.Println(err)
 		return nil, err
@@ -31,9 +36,15 @@ func (r *Resolver) getCategories() ([]*model.Category, error) {
 
 // get a single category by id
 func (r *Resolver) getCategoryByPk(category_id string) (*model.Category, error) {
-	sql := `SELECT * FROM category where category_id=?;`
+	sql := `SELECT * FROM category WHERE category_id=$1;`
 	var category model.Category
-	err := r.DbSchema.QueryRow(sql, category_id).Scan(&category.ID, &category.Comment)
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = query.QueryRow(category_id).Scan(&category.ID, &category.Comment)
 	if err != nil {
 		log.Println(err) 
 		return nil, err

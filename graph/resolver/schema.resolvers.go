@@ -15,17 +15,39 @@ import (
 func (r *mutationResolver) InsertBook(ctx context.Context, title string, year *int, publisher *string, description *string, coverURL *string, authors []*string, formats []*string, categories []*string) (*model.Book, error) {
 	var (
 		book_authors    []*model.Author
-		book_formats    []*model.Format
+		//book_formats    []*model.Format
 		book_categories []*model.Category
 	)
+	book_id := cuid.New()
+
+	// assign parameters
+	book := &model.Book{
+		ID:          book_id,
+		Title:       title,
+		Year:        year,
+		Publisher:   publisher,
+		Description: description,
+		CoverURL:    coverURL,
+	}
+
+	// resolver call to db
+	err := r.dbInsertBook(ctx, book)
+	if err != nil {
+		return nil, err
+	}
 
 	// retrieve authors records
 	for _, req := range authors {
 		found := false
 		for _, a := range r.authors {
 			if a.ID == *req {
-				book_authors = append(book_authors, a)
 				found = true
+				//insert book_author record
+				err := r.dbInsertBookAuthor(ctx, book_id, a.ID)
+				if err != nil {
+					return nil, err
+				}
+				book_authors = append(book_authors, a)
 				break
 			}
 		}
@@ -34,6 +56,8 @@ func (r *mutationResolver) InsertBook(ctx context.Context, title string, year *i
 		}
 	}
 
+	/*
+	// book formats should be added one by one after book creation
 	// retrieve formats records
 	for _, req := range formats {
 		found := false
@@ -48,40 +72,31 @@ func (r *mutationResolver) InsertBook(ctx context.Context, title string, year *i
 			return nil, fmt.Errorf("format [id: %s] does not exist", *req)
 		}
 	}
+	*/
 
 	// retrieve categories records
 	for _, req := range categories {
 		found := false
 		for _, c := range r.categories {
 			if c.ID == *req {
-				book_categories = append(book_categories, c)
 				found = true
+				//insert book_category record
+				err := r.dbInsertBookCategory(ctx, book_id, c.ID)
+				if err != nil {
+					return nil, err
+				}
+				book_categories = append(book_categories, c)
 				break
 			}
 		}
 		if !found {
-			return nil, fmt.Errorf("format [id: %s] does not exist", *req)
+			return nil, fmt.Errorf("category [id: %s] does not exist", *req)
 		}
 	}
 
-	// assign parameters
-	book := &model.Book{
-		ID:          cuid.New(),
-		Title:       title,
-		Year:        year,
-		Publisher:   publisher,
-		Description: description,
-		CoverURL:    coverURL,
-		Authors:     book_authors,
-		Formats:     book_formats,
-		Categories:  book_categories,
-	}
-
-	// resolver call to db
-	err := r.DbInsertBook(ctx, book)
-	if err != nil {
-		return nil, err
-	}
+	book.Authors = book_authors
+	book.Categories = book_categories
+	//book.Formats = book_formats
 
 	// append to repository
 	r.books = append(r.books, book)

@@ -12,8 +12,13 @@ import (
 func (r *Resolver) DbInsertAuthor(ctx context.Context, author *model.Author) (error) {
 	sql := `INSERT INTO author (author_id, full_name, description, photo_url) VALUES ($1, $2, $3, $4) RETURNING author_id`
 	var id string
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
 	
-	err := r.DbSchema.QueryRow(sql, author.ID, author.FullName, author.Description, author.PhotoURL).Scan(&id)
+	err = query.QueryRow(author.ID, author.FullName, author.Description, author.PhotoURL).Scan(&id)
 	if err != nil {
   		log.Println(err)
 		  return err
@@ -26,8 +31,13 @@ func (r *Resolver) DbInsertAuthor(ctx context.Context, author *model.Author) (er
 func (r *Resolver) getAuthors() ([]*model.Author, error) {
 	sql := `SELECT author_id FROM author;`
 	var authors []*model.Author
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
 	
-	rows, err := r.DbSchema.Query(sql)
+	rows, err := query.Query()
 	if err != nil {
   		log.Println(err)
 		return nil, err
@@ -53,9 +63,15 @@ func (r *Resolver) getAuthors() ([]*model.Author, error) {
 
 // get a single author by id
 func (r *Resolver) getAuthorByPk(author_id string) (*model.Author, error) {
-	sql := `SELECT * FROM author WHERE author_id=?;`
+	sql := `SELECT * FROM author WHERE author_id=$1::VARCHAR(25);`
 	var author model.Author
-	err := r.DbSchema.QueryRow(sql, author_id).Scan(&author.ID, &author.FullName, &author.Description, &author.PhotoURL)
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = query.QueryRow(author_id).Scan(&author.ID, &author.FullName, &author.Description, &author.PhotoURL)
 	if err != nil {
 		log.Println(err) 
 		return nil, err
@@ -72,9 +88,15 @@ func (r *Resolver) getAuthorByPk(author_id string) (*model.Author, error) {
 
 // get a single author's name by id
 func (r *Resolver) getAuthorNameByPk(author_id string) (*model.Author, error) {
-	sql := `SELECT author_id, full_name FROM author WHERE author_id=?;`
+	sql := `SELECT author_id, full_name FROM author WHERE author_id=$1::VARCHAR(25);`
 	var author model.Author
-	err := r.DbSchema.QueryRow(sql, author_id).Scan(&author.ID, &author.FullName)
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = query.QueryRow(author_id).Scan(&author.ID, &author.FullName)
 	if err != nil {
 		log.Println(err) 
 		return nil, err
@@ -85,10 +107,15 @@ func (r *Resolver) getAuthorNameByPk(author_id string) (*model.Author, error) {
 
 // get all author's books
 func (r *Resolver) getAuthorBooks(author_id string) ([]*model.Book, error) {
-	sql := `SELECT * FROM book_author WHERE author_id=?;`
+	sql := `SELECT * FROM book_author WHERE author_id=$1::VARCHAR(25);`
 	var books []*model.Book
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
 	
-	rows, err := r.DbSchema.Query(sql)
+	rows, err := query.Query(sql)
 	if err != nil {
   		log.Println(err)
 		return nil, err
