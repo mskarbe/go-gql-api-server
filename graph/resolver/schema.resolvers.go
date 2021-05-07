@@ -136,6 +136,7 @@ func (r *queryResolver) BooksByCategory(ctx context.Context, category *string) (
 }
 
 func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
+	r.getBooks()
 	return r.books, nil
 }
 

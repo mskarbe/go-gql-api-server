@@ -9,8 +9,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/mskarbe/go-gql-api-server/graph"
 	"github.com/mskarbe/go-gql-api-server/graph/generated"
+	graph "github.com/mskarbe/go-gql-api-server/graph/resolver"
 )
 
 func main() {
@@ -23,13 +23,10 @@ func main() {
 	db.Migrate()
 	defer db.Close()
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(
-		generated.Config{Resolvers: 
-			&graph.Resolver{
-				DbSchema: db.Database,
-			},
-		},
-	))
+	resolver := &graph.Resolver{DbSchema: db.Database}
+	resolver.Initialize()
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{ Resolvers: resolver }))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
