@@ -1,28 +1,81 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+# GraphQL schema of a simple book catalog
 
-type Todo {
+type FormatType {
   id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+  comment: String
 }
 
-type User {
+type Category {
   id: ID!
-  name: String!
+  comment: String
+}
+
+type Author {
+  id: ID!
+  full_name: String!
+  description: String
+  photo_url: String
+
+  books: [Book!]!
+}
+
+type Book {
+  id: ID!
+  title: String!
+  year: Int
+  description: String
+  cover_url: String
+
+  authors: [Author!]!
+  formats: [FormatType!]!
+  categories: [Category!]!
+}
+
+type Format {
+  id: ID!
+  book: Book!
+  price: Float!
+  type: FormatType!
+  supply: Int!
 }
 
 type Query {
-  todos: [Todo!]!
-}
+  book_by_pk(id: ID): Book!
+  books_by_format(format: ID): [Book!]!
+  books_by_category(category: ID): [Book!]!
+  books: [Book!]!
 
-input NewTodo {
-  text: String!
-  userId: String!
+  category_by_pk(id: ID): Category!
+  categories: [Category!]!
+
+  format_by_pk(id: ID): Format!
+  formats: [Format!]!
+
+  format_type_by_pk(id: ID): FormatType!
+  format_types: [FormatType!]!
+
+  author_by_pk(id: ID): Author!
+  authors: [Author!]!
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  insert_book(
+    title: String!
+    year: Int
+    description: String
+    cover_url: String
+    authors: [ID!]!
+  ): Book!
+
+  insert_category(id: ID!, comment: String): Category!
+
+  insert_format(book: ID!, price: Float!, type: ID!, supply: Int!): Format!
+
+  insert_format_type(id: String!, comment: String): FormatType!
+
+  insert_author(
+    fullName: String!
+    description: String
+    photo_url: String
+  ): Author!
 }
