@@ -16,19 +16,20 @@ type Author {
   description: String
   photo_url: String
 
-  books: [Book!]!
+  books: [Book]
 }
 
 type Book {
   id: ID!
   title: String!
   year: Int
+  publisher: String
   description: String
   cover_url: String
 
-  authors: [Author!]!
-  formats: [FormatType!]!
-  categories: [Category!]!
+  authors: [Author]
+  formats: [Format]
+  categories: [Category]
 }
 
 type Format {
@@ -41,30 +42,33 @@ type Format {
 
 type Query {
   book_by_pk(id: ID): Book!
-  books_by_format(format: ID): [Book!]!
-  books_by_category(category: ID): [Book!]!
-  books: [Book!]!
+  books_by_format(format: ID): [Book]!
+  books_by_category(category: ID): [Book]!
+  books: [Book]!
 
   category_by_pk(id: ID): Category!
-  categories: [Category!]!
+  categories: [Category]!
 
   format_by_pk(id: ID): Format!
-  formats: [Format!]!
+  formats: [Format]!
 
   format_type_by_pk(id: ID): FormatType!
-  format_types: [FormatType!]!
+  format_types: [FormatType]!
 
   author_by_pk(id: ID): Author!
-  authors: [Author!]!
+  authors: [Author]!
 }
 
 type Mutation {
   insert_book(
     title: String!
     year: Int
+    publisher: String
     description: String
     cover_url: String
-    authors: [ID!]!
+    authors: [ID]
+    formats: [ID]
+    categories: [ID]
   ): Book!
 
   insert_category(id: ID!, comment: String): Category!

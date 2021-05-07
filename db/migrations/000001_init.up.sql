@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS author (
 -- book
 CREATE TABLE IF NOT EXISTS book (
     book_id CUID PRIMARY KEY,
+    title TEXT,
     year SMALLINT,
     publisher VARCHAR(64),
     description TEXT,
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS book (
 );
 
 -- book's author [relationship]
-CREATE TABLE IF NOT EXISTS bookAuthor (
+CREATE TABLE IF NOT EXISTS book_author (
     book_id CUID NOT NULL REFERENCES book(book_id),
     author_id CUID NOT NULL REFERENCES author(author_id),
     PRIMARY KEY (book_id, author_id)

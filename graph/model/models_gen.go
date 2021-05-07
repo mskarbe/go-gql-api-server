@@ -11,14 +11,15 @@ type Author struct {
 }
 
 type Book struct {
-	ID          string        `json:"id"`
-	Title       string        `json:"title"`
-	Year        *int          `json:"year"`
-	Description *string       `json:"description"`
-	CoverURL    *string       `json:"cover_url"`
-	Authors     []*Author     `json:"authors"`
-	Formats     []*FormatType `json:"formats"`
-	Categories  []*Category   `json:"categories"`
+	ID          string      `json:"id"`
+	Title       string      `json:"title"`
+	Year        *int        `json:"year"`
+	Publisher   *string     `json:"publisher"`
+	Description *string     `json:"description"`
+	CoverURL    *string     `json:"cover_url"`
+	Authors     []*Author   `json:"authors"`
+	Formats     []*Format   `json:"formats"`
+	Categories  []*Category `json:"categories"`
 }
 
 type Category struct {
