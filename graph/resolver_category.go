@@ -1,10 +1,30 @@
 package graph
 
 import (
+	"context"
 	"log"
 
 	"github.com/mskarbe/go-gql-api-server/graph/model"
 )
+
+// Insert new category into database
+func (r *Resolver) dbInsertCategory(ctx context.Context, category *model.Category) (error) {
+	sql := `INSERT INTO category (category_id, comment) VALUES ($1, $2) RETURNING author_id`
+	var id string
+
+	query, err := r.DbSchema.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	err = query.QueryRow(category.ID, category.Comment).Scan(&id)
+	if err != nil {
+  		log.Println(err)
+		  return err
+	}
+	log.Println("New Category record:", id)
+	return nil
+}
 
 // get all the categories
 func (r *Resolver) getCategories() ([]*model.Category, error) {

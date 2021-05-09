@@ -83,7 +83,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		InsertAuthor     func(childComplexity int, fullName string, description *string, photoURL *string) int
-		InsertBook       func(childComplexity int, title string, year *int, publisher *string, description *string, coverURL *string, authors []*string, formats []*string, categories []*string) int
+		InsertBook       func(childComplexity int, title string, year *int, publisher *string, description *string, coverURL *string, authors []*string, categories []*string) int
 		InsertCategory   func(childComplexity int, id string, comment *string) int
 		InsertFormat     func(childComplexity int, book string, price float64, typeArg string, supply int) int
 		InsertFormatType func(childComplexity int, id string, comment *string) int
@@ -106,7 +106,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	InsertBook(ctx context.Context, title string, year *int, publisher *string, description *string, coverURL *string, authors []*string, formats []*string, categories []*string) (*model.Book, error)
+	InsertBook(ctx context.Context, title string, year *int, publisher *string, description *string, coverURL *string, authors []*string, categories []*string) (*model.Book, error)
 	InsertCategory(ctx context.Context, id string, comment *string) (*model.Category, error)
 	InsertFormat(ctx context.Context, book string, price float64, typeArg string, supply int) (*model.Format, error)
 	InsertFormatType(ctx context.Context, id string, comment *string) (*model.FormatType, error)
@@ -325,7 +325,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.InsertBook(childComplexity, args["title"].(string), args["year"].(*int), args["publisher"].(*string), args["description"].(*string), args["cover_url"].(*string), args["authors"].([]*string), args["formats"].([]*string), args["categories"].([]*string)), true
+		return e.complexity.Mutation.InsertBook(childComplexity, args["title"].(string), args["year"].(*int), args["publisher"].(*string), args["description"].(*string), args["cover_url"].(*string), args["authors"].([]*string), args["categories"].([]*string)), true
 
 	case "Mutation.insert_category":
 		if e.complexity.Mutation.InsertCategory == nil {
@@ -615,7 +615,6 @@ type Mutation {
     description: String
     cover_url: String
     authors: [ID]
-    formats: [ID]
     categories: [ID]
   ): Book!
 
@@ -730,23 +729,14 @@ func (ec *executionContext) field_Mutation_insert_book_args(ctx context.Context,
 	}
 	args["authors"] = arg5
 	var arg6 []*string
-	if tmp, ok := rawArgs["formats"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("formats"))
+	if tmp, ok := rawArgs["categories"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categories"))
 		arg6, err = ec.unmarshalOID2ᚕᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["formats"] = arg6
-	var arg7 []*string
-	if tmp, ok := rawArgs["categories"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categories"))
-		arg7, err = ec.unmarshalOID2ᚕᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["categories"] = arg7
+	args["categories"] = arg6
 	return args, nil
 }
 
@@ -1792,7 +1782,7 @@ func (ec *executionContext) _Mutation_insert_book(ctx context.Context, field gra
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().InsertBook(rctx, args["title"].(string), args["year"].(*int), args["publisher"].(*string), args["description"].(*string), args["cover_url"].(*string), args["authors"].([]*string), args["formats"].([]*string), args["categories"].([]*string))
+		return ec.resolvers.Mutation().InsertBook(rctx, args["title"].(string), args["year"].(*int), args["publisher"].(*string), args["description"].(*string), args["cover_url"].(*string), args["authors"].([]*string), args["categories"].([]*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

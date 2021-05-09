@@ -9,6 +9,7 @@ _GraphQL API for PostgreSQL database written in Go._
     - [Schema](#schema)
     - [Migrations](#migrations)
   - [GraphQL](#graphql)
+  - [Todos](#todos)
 
 <!-- /TOC -->
 

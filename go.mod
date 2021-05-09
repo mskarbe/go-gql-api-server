@@ -12,6 +12,6 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.10.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/vektah/gqlparser/v2 v2.2.0
+	github.com/vektah/gqlparser/v2 v2.1.0
 	gopkg.in/lucsky/cuid.v1 v1.0.1
 )

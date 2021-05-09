@@ -12,10 +12,9 @@ import (
 	cuid "gopkg.in/lucsky/cuid.v1"
 )
 
-func (r *mutationResolver) InsertBook(ctx context.Context, title string, year *int, publisher *string, description *string, coverURL *string, authors []*string, formats []*string, categories []*string) (*model.Book, error) {
+func (r *mutationResolver) InsertBook(ctx context.Context, title string, year *int, publisher *string, description *string, coverURL *string, authors []*string, categories []*string) (*model.Book, error) {
 	var (
 		book_authors    []*model.Author
-		//book_formats    []*model.Format
 		book_categories []*model.Category
 	)
 	book_id := cuid.New()
@@ -56,24 +55,6 @@ func (r *mutationResolver) InsertBook(ctx context.Context, title string, year *i
 		}
 	}
 
-	/*
-	// book formats should be added one by one after book creation
-	// retrieve formats records
-	for _, req := range formats {
-		found := false
-		for _, f := range r.formats {
-			if f.ID == *req {
-				book_formats = append(book_formats, f)
-				found = true
-				break
-			}
-		}
-		if !found {
-			return nil, fmt.Errorf("format [id: %s] does not exist", *req)
-		}
-	}
-	*/
-
 	// retrieve categories records
 	for _, req := range categories {
 		found := false
@@ -96,7 +77,6 @@ func (r *mutationResolver) InsertBook(ctx context.Context, title string, year *i
 
 	book.Authors = book_authors
 	book.Categories = book_categories
-	//book.Formats = book_formats
 
 	// append to repository
 	r.books = append(r.books, book)
@@ -120,13 +100,13 @@ func (r *mutationResolver) InsertFormatType(ctx context.Context, id string, comm
 
 func (r *mutationResolver) InsertAuthor(ctx context.Context, fullName string, description *string, photoURL *string) (*model.Author, error) {
 	author := &model.Author{
-		ID:			cuid.New(),
-		FullName: 	fullName,
-		Description: description, 
-		PhotoURL: photoURL, 
+		ID:          cuid.New(),
+		FullName:    fullName,
+		Description: description,
+		PhotoURL:    photoURL,
 	}
 
-	err := r.DbInsertAuthor(ctx, author)
+	err := r.dbInsertAuthor(ctx, author)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +131,7 @@ func (r *queryResolver) BooksByCategory(ctx context.Context, category *string) (
 }
 
 func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
-	r.getBooks()
+	//r.getBooks()
 	return r.books, nil
 }
 

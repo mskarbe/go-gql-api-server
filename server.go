@@ -9,8 +9,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	graph "github.com/mskarbe/go-gql-api-server/graph"
 	"github.com/mskarbe/go-gql-api-server/graph/generated"
-	graph "github.com/mskarbe/go-gql-api-server/graph/resolver"
 )
 
 func main() {

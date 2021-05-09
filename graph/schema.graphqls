@@ -67,7 +67,6 @@ type Mutation {
     description: String
     cover_url: String
     authors: [ID]
-    formats: [ID]
     categories: [ID]
   ): Book!
 

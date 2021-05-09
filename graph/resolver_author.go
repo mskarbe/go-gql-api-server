@@ -9,7 +9,7 @@ import (
 )
 
 // Insert new author into database
-func (r *Resolver) DbInsertAuthor(ctx context.Context, author *model.Author) (error) {
+func (r *Resolver) dbInsertAuthor(ctx context.Context, author *model.Author) (error) {
 	sql := `INSERT INTO author (author_id, full_name, description, photo_url) VALUES ($1, $2, $3, $4) RETURNING author_id`
 	var id string
 
