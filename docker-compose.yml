@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  postgres:
+    container_name: pgql
+    image: postgres:12.6
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: pgql
